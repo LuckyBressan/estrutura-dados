@@ -17,7 +17,7 @@ type
         prox : TNodoChave
     end;
 
-var listaChave, listaInicio, listaFim: TNodoChave;
+var listaInicio, listaFim: TNodoChave;
     chave: string;
     op: integer;
 
@@ -38,7 +38,7 @@ begin
     listaC := nil;
 end;
 
-procedure incluirPalavraChave(var listaC, listaI, listaF: TNodoChave; p: string);
+procedure incluirPalavraChave(var listaI, listaF: TNodoChave; p: string);
 var aux, aux2, aux3: TNodoChave;
     bool_while: boolean;
 begin
@@ -49,17 +49,17 @@ begin
             readkey
         end
     else
-        if listaC = nil then
+        if listaI = nil then
             begin
                 aux^.ant := nil;
                 aux^.palavra := p;
                 aux^.dicionario := nil;
                 aux^.prox := nil;
-                listaC := aux;
+                listaI := aux;
             end
         else
             begin
-                aux2 := listaC;
+                aux2 := listaI;
                 aux3 := nil;
                 bool_while := TRUE;
                 while bool_while = TRUE do
@@ -69,7 +69,7 @@ begin
                                 escreva('Palavra chave ja cadastrada!');
                                 bool_while := FALSE;
                             end
-                        else if aux2 = nil then
+                        else if aux2 = nil then //Novo último elemento da lista
                             begin
                                 aux^.palavra := p;
                                 aux^.dicionario := nil;
@@ -78,8 +78,6 @@ begin
                                 aux^.ant  := aux3;
                                 //aponta o prox do elemento anterior para o novo elemento
                                 aux3^.prox := aux;
-                                //Armazena o final da lista
-                                listaF := aux;
                                 bool_while := FALSE;
                             end
                         else if p > aux2^.palavra then
@@ -94,7 +92,7 @@ begin
                                 aux^.prox := aux2;
                                 aux^.ant := nil;
                                 if aux3 = nil then
-                                    listaC := aux
+                                    listaI := aux
                                 else
                                     begin
                                         aux3^.prox := aux;
@@ -103,8 +101,15 @@ begin
                                 bool_while := FALSE;
                             end;
                     end;
-                //Armazena o começo da lista
-                listaI := listaC;
+                escreva('Indo armazenar o final da lista');
+                //Percorre a lista até o final
+                aux := listaI;
+                while aux^.prox <> nil do
+                    begin
+                        aux := listaI^.prox;
+                    end;
+                //Armazena o final da lista
+                listaF := aux;
             end;
 end;
 
@@ -139,7 +144,6 @@ procedure escrevePalavraChave(listaI, listaF: TNodoChave);
 Begin
 
     op := 1;
-    iniciarListaChave(listaChave);
     iniciarListaChave(listaInicio);
     iniciarListaChave(listaFim);
 
@@ -163,7 +167,7 @@ Begin
                 1: begin
                     writeln('Informe a palavra chave:');
                     readln(chave);
-                    incluirPalavraChave(listaChave, listaInicio, listaFim, chave);
+                    incluirPalavraChave(listaInicio, listaFim, chave);
                     escreva('Palavra chave salva!');
                 end;
                 2: begin
