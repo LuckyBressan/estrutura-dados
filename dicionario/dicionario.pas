@@ -78,6 +78,10 @@ begin
                                 aux^.ant  := aux3;
                                 //aponta o prox do elemento anterior para o novo elemento
                                 aux3^.prox := aux;
+
+                                //Armazena o final da lista
+                                listaF := aux;
+
                                 bool_while := FALSE;
                             end
                         else if p > aux2^.palavra then
@@ -90,26 +94,18 @@ begin
                                 aux^.palavra := p;
                                 aux^.dicionario := nil;
                                 aux^.prox := aux2;
-                                aux^.ant := nil;
+                                aux^.ant := aux3;
                                 if aux3 = nil then
                                     listaI := aux
                                 else
                                     begin
+                                        //insere a nova palavra entre as demais palavras chave
                                         aux3^.prox := aux;
-                                        aux^.ant := aux3
+                                        aux2^.ant  := aux
                                     end;
                                 bool_while := FALSE;
                             end;
                     end;
-                escreva('Indo armazenar o final da lista');
-                //Percorre a lista até o final
-                aux := listaI;
-                while aux^.prox <> nil do
-                    begin
-                        aux := listaI^.prox;
-                    end;
-                //Armazena o final da lista
-                listaF := aux;
             end;
 end;
 
