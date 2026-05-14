@@ -3,18 +3,18 @@ Program dicionario_atividade;
 uses crt;
 
 type
-    TNodoChave = ^TPalavraChave;
-    TPalavraChave = record
-        ant : TNodoChave;
-        palavra: string;
-        dicionario: TNodoDicionario
-        prox : TNodoChave
-    end;
     TNodoDicionario = ^TDicionario;
     TDicionario = record
         port: string;
         ing: string;
         prox: TNodoDicionario
+    end;
+    TNodoChave = ^TPalavraChave;
+    TPalavraChave = record
+        ant : TNodoChave;
+        palavra: string;
+        dicionario: TNodoDicionario;
+        prox : TNodoChave
     end;
 
 var listaChave, listaInicio, listaFim: TNodoChave;
@@ -78,6 +78,7 @@ begin
                                 aux^.ant  := aux3;
                                 //aponta o prox do elemento anterior para o novo elemento
                                 aux3^.prox := aux;
+                                //Armazena o final da lista
                                 listaF := aux;
                                 bool_while := FALSE;
                             end
@@ -101,26 +102,37 @@ begin
                                     end;
                                 bool_while := FALSE;
                             end;
-                    end
-                listaI := listaC
-            end
+                    end;
+                //Armazena o começo da lista
+                listaI := listaC;
+            end;
 end;
 
-procedure escrevePalavraChave(listaC: TNodoChave);
+procedure escrevePalavraChave(listaI, listaF: TNodoChave);
     var aux : TNodoChave;
 		pos : integer;
 	begin
-		if listaC = nil then
+		if listaI = nil then
 			escreva('Lista vazia!')
 		else
 			begin
-				aux := listaC;
+                writeln('Do início ao fim:');
+				aux := listaI;
 				while aux <> nil do
 					begin
 						writeln(aux^.palavra);
 						aux := aux^.prox;
 					end;
-                escreva('Fim da lista!')
+                escreva('Fim da lista!');
+
+                writeln('Do fim ao começo:');
+                aux := listaF;
+				while aux <> nil do
+					begin
+						writeln(aux^.palavra);
+						aux := aux^.ant;
+					end;
+                escreva('Fim da lista!');
 			end;
 	end;
 
@@ -128,6 +140,8 @@ Begin
 
     op := 1;
     iniciarListaChave(listaChave);
+    iniciarListaChave(listaInicio);
+    iniciarListaChave(listaFim);
 
     while op <> 0 do
         begin
@@ -149,7 +163,7 @@ Begin
                 1: begin
                     writeln('Informe a palavra chave:');
                     readln(chave);
-                    incluirPalavraChave(listaChave, chave);
+                    incluirPalavraChave(listaChave, listaInicio, listaFim, chave);
                     escreva('Palavra chave salva!');
                 end;
                 2: begin
@@ -162,7 +176,7 @@ Begin
                 end;
                 6: begin
                     writeln('Essas sao as palavras chave:');
-                    escrevePalavraChave(listaChave);
+                    escrevePalavraChave(listaInicio, listaFim);
                 end;
             end;
         end;
