@@ -18,7 +18,7 @@ type
     end;
 
 var listaInicio, listaFim: TNodoChave;
-    chave: string;
+    chave, port, ing: string;
     op: integer;
 
 
@@ -33,9 +33,9 @@ procedure escreva(m: string);
 
 { PARTE RELACIONADA A PALAVRA CHAVE }
 
-procedure iniciarListaChave(var listaC: TNodoChave);
+procedure iniciarLista(var lista: TNodoChave);
 begin
-    listaC := nil;
+    lista := nil;
 end;
 
 procedure incluirPalavraChave(var listaI, listaF: TNodoChave; p: string);
@@ -137,11 +137,102 @@ procedure escrevePalavraChave(listaI, listaF: TNodoChave);
 			end;
 	end;
 
+procedure incluirPalavra(var listaD: TNodoDicionario; tradP, tradI: string);
+var aux, aux2, aux3: TNodoDicionario;
+    bool_while: boolean;
+begin
+    new(aux);
+    if aux = nil then
+        begin
+            escreva('Sem memoria!');
+            readkey
+        end
+    else
+        if listaD = nil then
+            begin
+                aux^.port := tradP;
+                aux^.ing := tradI;
+                aux^.prox := nil;
+                listaD := aux;
+            end
+        else
+            begin
+                aux2 := listaD;
+                aux3 := nil;
+                bool_while := TRUE;
+                while bool_while = TRUE do
+                    begin
+                        if tradP = aux2^.port then
+                            begin
+                                escreva('Tradução ja cadastrada!');
+                                bool_while := FALSE;
+                            end
+                        else if aux2 = nil then //Novo último elemento da lista
+                            begin
+                                aux^.port := tradP;
+                                aux^.ing := tradI;
+                                aux^.prox := nil;
+                                //aponta o prox do elemento anterior para o novo elemento
+                                aux3^.prox := aux;
+                                bool_while := FALSE;
+                            end
+                        else if tradP > aux2^.port then
+                            begin
+                                aux3 := aux2;
+                                aux2 := aux2^.prox;
+                            end
+                        else if tradP < aux2^.port then
+                            begin
+                                aux^.port := tradP;
+                                aux^.ing := tradI;
+                                aux^.prox := aux2;
+                                if aux3 = nil then
+                                    listaD := aux
+                                else
+                                    //insere a nova palavra entre as demais palavras chave
+                                    aux3^.prox := aux;
+                                bool_while := FALSE;
+                            end;
+                    end;
+            end;
+end;
+
+procedure incluirTraducao(tradP, tradI: string; var listaI: TNodoChave);
+var aux: TNodoChave;
+bool_while: boolean;
+begin
+    if listaI = nil then
+        escreva('Sem palavras chave!')
+    else
+        begin
+            aux := listaI;
+            bool_while := TRUE;
+            while bool_while = TRUE do
+                begin
+                    if tradP > aux^.palavra then
+                        begin
+                            aux := aux^.prox;
+                            if aux = nil then
+                                begin
+                                    escreva('A tradução não se encaixa em nenhuma palavra chave.');
+                                    bool_while := FALSE;
+                                end;
+                        end
+                    else
+                        begin
+                            incluirPalavra(aux^.dicionario, tradP, tradI);
+                            escreva('Incluído tradução nova!');
+                            bool_while := FALSE;
+                        end;
+                end;
+        end;
+end;
+
 Begin
 
     op := 1;
-    iniciarListaChave(listaInicio);
-    iniciarListaChave(listaFim);
+    iniciarLista(listaInicio);
+    iniciarLista(listaFim);
 
     while op <> 0 do
         begin
@@ -167,12 +258,16 @@ Begin
                     escreva('Palavra chave salva!');
                 end;
                 2: begin
+                    writeln('Informe a traducao:');
+                    readln(port, ing);
+                    incluirTraducao(port, ing, listaInicio);
                 end;
                 3: begin
                 end;
                 4: begin
                 end;
                 5: begin
+                    
                 end;
                 6: begin
                     writeln('Essas sao as palavras chave:');
