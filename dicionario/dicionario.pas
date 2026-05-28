@@ -31,7 +31,61 @@ procedure escreva(m: string);
         writeln();
     end;
 
-{ PARTE RELACIONADA A PALAVRA CHAVE }
+procedure escrevePalavraChave(listaI, listaF: TNodoChave);
+    var aux : TNodoChave;
+		pos : integer;
+	begin
+		if listaI = nil then
+			escreva('Lista vazia!')
+		else
+			begin
+                writeln('Do início ao fim:');
+				aux := listaI;
+				while aux <> nil do
+					begin
+						writeln(aux^.palavra);
+						aux := aux^.prox;
+					end;
+                escreva('Fim da listagem!');
+
+                writeln('Do fim ao começo:');
+                aux := listaF;
+				while aux <> nil do
+					begin
+						writeln(aux^.palavra);
+						aux := aux^.ant;
+					end;
+                escreva('Fim da listagem!');
+			end;
+	end;
+
+procedure escreveDicionario(listaI: TNodoChave);
+    var aux : TNodoChave;
+        aux2: TNodoDicionario;
+    begin
+        if listaI = nil then
+            escreva('Lista vazia!')
+        else
+            begin
+                aux := listaI;
+                while aux <> nil do
+                    begin
+                        writeln('Palavra Chave: ', aux^.palavra);
+                        aux2 := aux^.dicionario;
+                        if aux2 = nil then
+                            writeln(' - Sem traduções!')
+                        else
+                        while aux2 <> nil do
+                            begin
+                                writeln(' - ', aux2^.port, ' -> ', aux2^.ing);
+                                aux2 := aux2^.prox;
+                            end;
+                        writeln();
+                        aux := aux^.prox;
+                    end;
+                escreva('Fim da listagem!');
+            end;
+    end;
 
 procedure iniciarLista(var lista: TNodoChave);
 begin
@@ -64,7 +118,7 @@ begin
                 bool_while := TRUE;
                 while bool_while = TRUE do
                     begin
-                        if p = aux2^.palavra then
+                        if (aux2 <> nil) and (p = aux2^.palavra) then
                             begin
                                 escreva('Palavra chave ja cadastrada!');
                                 bool_while := FALSE;
@@ -108,34 +162,6 @@ begin
                     end;
             end;
 end;
-
-procedure escrevePalavraChave(listaI, listaF: TNodoChave);
-    var aux : TNodoChave;
-		pos : integer;
-	begin
-		if listaI = nil then
-			escreva('Lista vazia!')
-		else
-			begin
-                writeln('Do início ao fim:');
-				aux := listaI;
-				while aux <> nil do
-					begin
-						writeln(aux^.palavra);
-						aux := aux^.prox;
-					end;
-                escreva('Fim da lista!');
-
-                writeln('Do fim ao começo:');
-                aux := listaF;
-				while aux <> nil do
-					begin
-						writeln(aux^.palavra);
-						aux := aux^.ant;
-					end;
-                escreva('Fim da lista!');
-			end;
-	end;
 
 procedure incluirPalavra(var listaD: TNodoDicionario; tradP, tradI: string);
 var aux, aux2, aux3: TNodoDicionario;
@@ -194,6 +220,7 @@ begin
                                 bool_while := FALSE;
                             end;
                     end;
+                escreva('Palavra chave salva!');
             end;
 end;
 
@@ -228,6 +255,164 @@ begin
         end;
 end;
 
+
+
+procedure removerPalavraChave(var listaI, listaF: TNodoChave; p: string);
+var aux: TNodoChave;
+    bool_while: boolean;
+begin
+    if listaI = nil then
+        escreva('Sem palavras chave!')
+    else
+        begin
+            aux := listaI;
+            bool_while := TRUE;
+            while bool_while = TRUE do
+                begin
+                    if p > aux^.palavra then
+                        begin
+                            aux := aux^.prox;
+                            if aux = nil then
+                                begin
+                                    escreva('Palavra chave não encontrada!');
+                                    bool_while := FALSE;
+                                end;
+                        end
+                    else if p < aux^.palavra then
+                        begin
+                            escreva('Palavra chave não encontrada!');
+                            bool_while := FALSE;
+                        end
+                    else
+                        begin
+                            if aux = listaI then
+                                begin
+                                    listaI := aux^.prox;
+                                    if aux^.prox <> nil then
+                                        aux^.prox^.ant := nil;
+                                end
+                            else if aux = listaF then
+                                begin
+                                    listaF := aux^.ant;
+                                    if aux^.ant <> nil then
+                                        aux^.ant^.prox := nil;
+                                end
+                            else
+                                begin
+                                    aux^.ant^.prox := aux^.prox;
+                                    aux^.prox^.ant := aux^.ant;
+                                end;
+                            dispose(aux);
+                            escreva('Palavra chave removida!');
+                            bool_while := FALSE;
+                        end;
+                end;
+        end;
+end;
+
+procedure removerTraducao(tradP: string; var listaI: TNodoChave);
+var aux: TNodoChave;
+    aux2, aux3: TNodoDicionario;
+    bool_while: boolean;
+begin
+    if listaI = nil then
+        escreva('Sem palavras chave!')
+    else
+        begin
+            aux := listaI;
+            bool_while := TRUE;
+            while bool_while = TRUE do
+                begin
+                    if tradP > aux^.palavra then
+                        begin
+                            aux := aux^.prox;
+                            if aux = nil then
+                                begin
+                                    escreva('A tradução não se encaixa em nenhuma palavra chave.');
+                                    bool_while := FALSE;
+                                end;
+                        end
+                    else
+                        begin
+                            aux2 := aux^.dicionario;
+                            aux3 := nil;
+                            while aux2 <> nil do
+                                begin
+                                    if tradP = aux2^.port then
+                                        begin
+                                            if aux3 = nil then
+                                                aux^.dicionario := aux2^.prox
+                                            else
+                                                aux3^.prox := aux2^.prox;
+                                            dispose(aux2);
+                                            escreva('Tradução removida!');
+                                            bool_while := FALSE;
+                                        end
+                                    else                                        
+                                        begin
+                                            aux3 := aux2;
+                                            aux2 := aux2^.prox;
+                                        end;
+                                end;
+                            if bool_while = TRUE then
+                                begin
+                                    escreva('Tradução não encontrada!');
+                                    bool_while := FALSE;
+                                end;
+                        end;
+                end;
+        end;
+end;
+
+procedure consultaTraducao(tradP: string; var listaI: TNodoChave);
+var aux: TNodoChave;
+    aux2: TNodoDicionario;
+    bool_while: boolean;
+begin
+    if listaI = nil then
+        escreva('Sem palavras chave!')
+    else
+        begin
+            aux := listaI;
+            bool_while := TRUE;
+            while bool_while = TRUE do
+                begin
+                    if tradP > aux^.palavra then
+                        begin
+                            aux := aux^.prox;
+                            if aux = nil then
+                                begin
+                                    escreva('A tradução não se encaixa em nenhuma palavra chave.');
+                                    bool_while := FALSE;
+                                end;
+                        end
+                    else
+                        begin
+                            aux2 := aux^.dicionario;
+                            while aux2 <> nil do
+                                begin
+                                    if tradP = aux2^.port then
+                                        begin
+                                            writeln('Tradução encontrada:');
+                                            writeln('Português: ', aux2^.port);
+                                            writeln('Inglês: ', aux2^.ing);
+                                            bool_while := FALSE;
+                                        end
+                                    else                                        
+                                        begin
+                                            aux2 := aux2^.prox;
+                                        end;
+                                end;
+                            if bool_while = TRUE then
+                                begin
+                                    escreva('Tradução não encontrada!');
+                                    bool_while := FALSE;
+                                end;
+                        end;
+                end;
+        end;
+end;
+
 Begin
 
     op := 1;
@@ -238,11 +423,12 @@ Begin
         begin
             writeln('0 - Sair');
             writeln('1 - Cadastrar palavra chave');
-            writeln('2 - Incluir traducao');
-            writeln('3 - Remover traducao');
-            writeln('4 - Consultar dicionario');
-            writeln('5 - Escrever dicionario');
-            writeln('6 - Escrever palavras-chave');
+            writeln('2 - Remover palavra chave');
+            writeln('3 - Incluir traducao');
+            writeln('4 - Remover traducao');
+            writeln('5 - Consultar dicionario');
+            writeln('6 - Escrever dicionario');
+            writeln('7 - Escrever palavras-chave');
 
             writeln();
             writeln();
@@ -255,21 +441,34 @@ Begin
                     writeln('Informe a palavra chave:');
                     readln(chave);
                     incluirPalavraChave(listaInicio, listaFim, chave);
-                    escreva('Palavra chave salva!');
                 end;
                 2: begin
-                    writeln('Informe a traducao:');
-                    readln(port, ing);
-                    incluirTraducao(port, ing, listaInicio);
+                    writeln('Informe a palavra chave que deseja remover:');
+                    readln(chave);
+                    removerPalavraChave(listaInicio, listaFim, chave);
                 end;
                 3: begin
+                    writeln('Informe a palavra em portugues:');
+                    readln(port);
+                    writeln('Informe a traducao em ingles:');
+                    readln(ing);
+                    incluirTraducao(port, ing, listaInicio);
                 end;
                 4: begin
+                    writeln('Informe a tradução que deseja remover:');
+                    readln(port);
+                    removerTraducao(port, listaInicio);
                 end;
                 5: begin
-                    
+                    writeln('Informe a tradução que deseja consultar:');
+                    readln(port);
+                    consultaTraducao(port, listaInicio);
                 end;
                 6: begin
+                    writeln('Essas sao as palavras chave e suas traducoes:');
+                    escreveDicionario(listaInicio);
+                end;
+                7: begin
                     writeln('Essas sao as palavras chave:');
                     escrevePalavraChave(listaInicio, listaFim);
                 end;
