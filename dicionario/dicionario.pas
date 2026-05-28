@@ -257,6 +257,23 @@ end;
 
 
 
+procedure distribuirDicionario(removido: TNodoChave);
+var aux: TNodoDicionario;
+    aux2: TNodoChave;
+begin
+    if removido^.dicionario <> nil then
+        begin
+            aux := removido^.dicionario;
+            aux2 := removido^.prox;
+            while aux^.prox <> nil do
+                aux := aux^.prox;
+            //a última palavra do dicionário da palavra chave sendo removida
+            //aponta para o começo do dicionário da próxima palavra chave
+            aux^.prox := aux2^.dicionario;
+            aux2^.dicionario := removido^.dicionario;
+        end
+end;
+
 procedure removerPalavraChave(var listaI, listaF: TNodoChave; p: string);
 var aux: TNodoChave;
     bool_while: boolean;
@@ -285,26 +302,28 @@ begin
                         end
                     else
                         begin
-                            if aux = listaI then
+                            if aux = listaF then
                                 begin
-                                    listaI := aux^.prox;
-                                    if aux^.prox <> nil then
-                                        aux^.prox^.ant := nil;
-                                end
-                            else if aux = listaF then
-                                begin
-                                    listaF := aux^.ant;
-                                    if aux^.ant <> nil then
-                                        aux^.ant^.prox := nil;
+                                    escreva('Não é possível remover a última palavra chave!');
+                                    bool_while := FALSE;
                                 end
                             else
                                 begin
-                                    aux^.ant^.prox := aux^.prox;
-                                    aux^.prox^.ant := aux^.ant;
+                                    distribuirDicionario(aux);
+                                    if aux = listaI then
+                                        begin
+                                            listaI := aux^.prox;
+                                            aux^.prox^.ant := nil;
+                                        end
+                                    else
+                                        begin
+                                            aux^.ant^.prox := aux^.prox;
+                                            aux^.prox^.ant := aux^.ant;
+                                        end;
+                                    dispose(aux);
+                                    escreva('Palavra chave removida!');
+                                    bool_while := FALSE;
                                 end;
-                            dispose(aux);
-                            escreva('Palavra chave removida!');
-                            bool_while := FALSE;
                         end;
                 end;
         end;
