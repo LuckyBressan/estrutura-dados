@@ -73,7 +73,7 @@ procedure escreveDicionario(listaI: TNodoChave);
                         writeln('Palavra Chave: ', aux^.palavra);
                         aux2 := aux^.dicionario;
                         if aux2 = nil then
-                            writeln(' - Sem traduções!')
+                            writeln(' - Sem traducoes!')
                         else
                         while aux2 <> nil do
                             begin
@@ -190,7 +190,7 @@ begin
                     begin
                         if tradP = aux2^.port then
                             begin
-                                escreva('Tradução ja cadastrada!');
+                                escreva('Traducao ja cadastrada!');
                                 bool_while := FALSE;
                             end
                         else if aux2 = nil then //Novo último elemento da lista
@@ -220,11 +220,10 @@ begin
                                 bool_while := FALSE;
                             end;
                     end;
-                escreva('Palavra chave salva!');
             end;
 end;
 
-procedure incluirTraducao(tradP, tradI: string; var listaI: TNodoChave);
+procedure incluirTraducao(tradP, tradI: string; var listaI, listaF: TNodoChave);
 var aux: TNodoChave;
 bool_while: boolean;
 begin
@@ -236,20 +235,34 @@ begin
             bool_while := TRUE;
             while bool_while = TRUE do
                 begin
-                    if tradP > aux^.palavra then
+                    if tradP = aux^.palavra then
                         begin
-                            aux := aux^.prox;
-                            if aux = nil then
-                                begin
-                                    escreva('A tradução não se encaixa em nenhuma palavra chave.');
-                                    bool_while := FALSE;
-                                end;
+                            escreva('A traducao não pode ser igual a palavra chave!');
+                            bool_while := FALSE;
                         end
                     else
                         begin
-                            incluirPalavra(aux^.dicionario, tradP, tradI);
-                            escreva('Incluído tradução nova!');
-                            bool_while := FALSE;
+                            //Se a tradução for maior que a última palavra já a incluímos como palavra chave
+                            if tradP > listaF^.palavra then
+                                begin
+                                    incluirPalavraChave(tradP, listaI, listaF);
+                                    escreva('A traducao não se encaixa em nenhuma palavra chave, adicionada como palavra chave.');
+                                end
+                            else if tradP > aux^.palavra then
+                                begin
+                                    aux := aux^.prox;
+                                    if aux = nil then
+                                        begin
+                                            escreva('Não foi possível incluir traducao');
+                                            bool_while := FALSE;
+                                        end;
+                                end
+                            else
+                                begin
+                                    incluirPalavra(aux^.dicionario, tradP, tradI);
+                                    escreva('Incluído traducao nova!');
+                                    bool_while := FALSE;
+                                end;
                         end;
                 end;
         end;
@@ -302,9 +315,9 @@ begin
                         end
                     else
                         begin
-                            if aux = listaF then
+                            if (aux = listaF) and (aux^.dicionario <> nil) then
                                 begin
-                                    escreva('Não é possível remover a última palavra chave!');
+                                    escreva('Não é possível remover a última palavra chave, pois ela possui dicionario vinculado!');
                                     bool_while := FALSE;
                                 end
                             else
@@ -367,7 +380,7 @@ begin
                                             escreva('Tradução removida!');
                                             bool_while := FALSE;
                                         end
-                                    else                                        
+                                    else
                                         begin
                                             aux3 := aux2;
                                             aux2 := aux2^.prox;
@@ -415,9 +428,10 @@ begin
                                             writeln('Tradução encontrada:');
                                             writeln('Português: ', aux2^.port);
                                             writeln('Inglês: ', aux2^.ing);
+                                            aux2 := nil;
                                             bool_while := FALSE;
                                         end
-                                    else                                        
+                                    else
                                         begin
                                             aux2 := aux2^.prox;
                                         end;
@@ -460,6 +474,7 @@ Begin
                     writeln('Informe a palavra chave:');
                     readln(chave);
                     incluirPalavraChave(listaInicio, listaFim, chave);
+                    escreva('Palavra chave incluida');
                 end;
                 2: begin
                     writeln('Informe a palavra chave que deseja remover:');
@@ -471,7 +486,7 @@ Begin
                     readln(port);
                     writeln('Informe a traducao em ingles:');
                     readln(ing);
-                    incluirTraducao(port, ing, listaInicio);
+                    incluirTraducao(port, ing, listaInicio, listaFim);
                 end;
                 4: begin
                     writeln('Informe a tradução que deseja remover:');
