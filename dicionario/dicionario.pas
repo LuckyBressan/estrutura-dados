@@ -87,7 +87,7 @@ procedure escreveDicionario(listaI: TNodoChave);
     end;
 
 function realocaDicionario(var listaD: TNodoDicionario; pChave: string): TNodoDicionario;
-var aux, aux2, aux3: TNodoDicionario;
+var aux, aux2, aux3, inicioAux3: TNodoDicionario;
     bool_while: boolean;
 begin
     if listaD = nil then
@@ -97,6 +97,7 @@ begin
             aux := listaD;
             aux2 := nil;
             aux3 := nil;
+            inicioAux3 := nil;
             bool_while := TRUE;
             while bool_while = TRUE do
                 begin
@@ -111,25 +112,31 @@ begin
                             else
                                 begin
                                     writeln('Todo o dicionario foi realocado!');
+                                    aux3^.prox := nil;
                                     listaD := nil;
-                                    realocaDicionario := aux3;
+                                    realocaDicionario := inicioAux3;
                                     bool_while := FALSE;
                                 end;
                         end
                     else if aux^.port < pChave then //verifica se a tradução é menor que a palavra chave, realocando então o dicionário
                         begin
                             if aux3 = nil then
-                                aux3 := aux
+                                begin
+                                    inicioAux3 := aux;
+                                    aux3 := aux;
+                                end
                             else
-                                aux3^.prox := aux;
+                                begin
+                                    aux3^.prox := aux;
+                                    aux3 := aux;
+                                end;
                         end
                     else if aux3 <> nil then
                         begin
                             writeln('Parte do dicionario foi realocado!');
-                            if aux2 <> nil then
-                                aux2^.prox := nil; //limpamos o apontamento do elemento anterior
+                            aux3^.prox := nil;
                             listaD := aux;
-                            realocaDicionario := aux3;
+                            realocaDicionario := inicioAux3;
                             bool_while := FALSE;
                         end;
 
@@ -377,7 +384,7 @@ begin
                         begin
                             if (aux = listaF) and (aux^.dicionario <> nil) then
                                 begin
-                                    escreva('NNao e possivel remover a ultima palavra chave, pois ela possui dicionario vinculado!');
+                                    escreva('Nao e possivel remover a ultima palavra chave, pois ela possui dicionario vinculado!');
                                     bool_while := FALSE;
                                 end
                             else
@@ -386,12 +393,18 @@ begin
                                     if aux = listaI then
                                         begin
                                             listaI := aux^.prox;
-                                            aux^.prox^.ant := nil;
+                                            if aux^.prox <> nil then
+                                                aux^.prox^.ant := nil
+                                            else
+                                                listaF := nil;
                                         end
                                     else
                                         begin
                                             aux^.ant^.prox := aux^.prox;
-                                            aux^.prox^.ant := aux^.ant;
+                                            if aux^.prox <> nil then
+                                                aux^.prox^.ant := aux^.ant
+                                            else
+                                                listaF := aux^.ant;
                                         end;
                                     dispose(aux);
                                     escreva('Palavra chave removida!');
