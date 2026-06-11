@@ -100,37 +100,44 @@ begin
             bool_while := TRUE;
             while bool_while = TRUE do
                 begin
-                    //verifica se a tradução é menor que a palavra chave, realocando então o dicionário
-                    if aux^.port < pChave then
+                    if aux = nil then
+                        begin
+                            if aux3 = nil then
+                                begin
+                                    writeln('Nada foi realocado!');
+                                    realocaDicionario := nil;
+                                    bool_while := FALSE;
+                                end
+                            else
+                                begin
+                                    writeln('Todo o dicionario foi realocado!');
+                                    listaD := nil;
+                                    realocaDicionario := aux3;
+                                    bool_while := FALSE;
+                                end;
+                        end
+                    else if aux^.port < pChave then //verifica se a tradução é menor que a palavra chave, realocando então o dicionário
                         begin
                             if aux3 = nil then
                                 aux3 := aux
                             else
                                 aux3^.prox := aux;
                         end
-                    else
+                    else if aux3 <> nil then
                         begin
                             writeln('Parte do dicionario foi realocado!');
-                            aux2^.prox := nil; //limpamos o apontamento do elemento anterior
+                            if aux2 <> nil then
+                                aux2^.prox := nil; //limpamos o apontamento do elemento anterior
                             listaD := aux;
                             realocaDicionario := aux3;
                             bool_while := FALSE;
                         end;
-                    aux2 := aux; //armazena o anterior para limpar o apontamento posteriormente
-                    aux := aux^.prox;
-                end;
 
-            if aux3 = nil then
-                begin
-                    writeln('Nao foi possivel realocar dicionario!');
-                    realocaDicionario := nil;
-                end
-            else if bool_while = TRUE then //Se bool_while = true e a variável não está vazia, significa que todo o dicionário precisa ser realocado
-                begin
-                    writeln('Todo o dicionario foi realocado!');
-                    dispose(listaD);
-                    listaD := nil;
-                    realocaDicionario := aux3;
+                    if aux <> nil then
+                        begin
+                            aux2 := aux; //armazena o anterior para limpar o apontamento posteriormente
+                            aux := aux^.prox;
+                        end;
                 end;
         end;
 end;
