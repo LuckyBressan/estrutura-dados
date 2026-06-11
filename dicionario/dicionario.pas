@@ -38,7 +38,7 @@ procedure escrevePalavraChave(listaI, listaF: TNodoChave);
 			escreva('Lista vazia!')
 		else
 			begin
-                writeln('Do início ao fim:');
+                writeln('Do inicio ao fim:');
 				aux := listaI;
 				while aux <> nil do
 					begin
@@ -47,7 +47,7 @@ procedure escrevePalavraChave(listaI, listaF: TNodoChave);
 					end;
                 escreva('Fim da listagem!');
 
-                writeln('Do fim ao começo:');
+                writeln('Do fim ao comeco:');
                 aux := listaF;
 				while aux <> nil do
 					begin
@@ -308,7 +308,7 @@ begin
                                     aux := aux^.prox;
                                     if aux = nil then
                                         begin
-                                            escreva('Não foi possível incluir traducao');
+                                            escreva('Nao foi possivel incluir traducao');
                                             bool_while := FALSE;
                                         end;
                                 end
@@ -357,20 +357,20 @@ begin
                             aux := aux^.prox;
                             if aux = nil then
                                 begin
-                                    escreva('Palavra chave não encontrada!');
+                                    escreva('Palavra chave nao encontrada!');
                                     bool_while := FALSE;
                                 end;
                         end
                     else if p < aux^.palavra then
                         begin
-                            escreva('Palavra chave não encontrada!');
+                            escreva('Palavra chave nao encontrada!');
                             bool_while := FALSE;
                         end
                     else
                         begin
                             if (aux = listaF) and (aux^.dicionario <> nil) then
                                 begin
-                                    escreva('Não é possível remover a última palavra chave, pois ela possui dicionario vinculado!');
+                                    escreva('NNao e possivel remover a ultima palavra chave, pois ela possui dicionario vinculado!');
                                     bool_while := FALSE;
                                 end
                             else
@@ -413,7 +413,7 @@ begin
                             aux := aux^.prox;
                             if aux = nil then
                                 begin
-                                    escreva('A tradução não se encaixa em nenhuma palavra chave.');
+                                    escreva('A traducao nao se encaixa em nenhuma palavra chave.');
                                     bool_while := FALSE;
                                 end;
                         end
@@ -430,7 +430,7 @@ begin
                                             else
                                                 aux3^.prox := aux2^.prox;
                                             dispose(aux2);
-                                            escreva('Tradução removida!');
+                                            escreva('Traducao removida!');
                                             bool_while := FALSE;
                                         end
                                     else
@@ -441,7 +441,7 @@ begin
                                 end;
                             if bool_while = TRUE then
                                 begin
-                                    escreva('Tradução não encontrada!');
+                                    escreva('Traducao nao encontrada!');
                                     bool_while := FALSE;
                                 end;
                         end;
@@ -467,7 +467,7 @@ begin
                             aux := aux^.prox;
                             if aux = nil then
                                 begin
-                                    escreva('A tradução não se encaixa em nenhuma palavra chave.');
+                                    escreva('A traducao nao se encaixa em nenhuma palavra chave.');
                                     bool_while := FALSE;
                                 end;
                         end
@@ -478,9 +478,9 @@ begin
                                 begin
                                     if tradP = aux2^.port then
                                         begin
-                                            writeln('Tradução encontrada:');
-                                            writeln('Português: ', aux2^.port);
-                                            writeln('Inglês: ', aux2^.ing);
+                                            writeln('Traducao encontrada:');
+                                            writeln('Portugues: ', aux2^.port);
+                                            writeln('Ingles: ', aux2^.ing);
                                             aux2 := nil;
                                             bool_while := FALSE;
                                         end
@@ -491,7 +491,7 @@ begin
                                 end;
                             if bool_while = TRUE then
                                 begin
-                                    escreva('Tradução não encontrada!');
+                                    escreva('Traducao nao encontrada!');
                                     bool_while := FALSE;
                                 end;
                         end;
@@ -541,12 +541,12 @@ Begin
                     incluirTraducao(port, ing, listaInicio, listaFim);
                 end;
                 4: begin
-                    writeln('Informe a tradução que deseja remover:');
+                    writeln('Informe a traducao que deseja remover:');
                     readln(port);
                     removerTraducao(port, listaInicio);
                 end;
                 5: begin
-                    writeln('Informe a tradução que deseja consultar:');
+                    writeln('Informe a traducao que deseja consultar:');
                     readln(port);
                     consultaTraducao(port, listaInicio);
                 end;
