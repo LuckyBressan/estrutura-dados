@@ -4,15 +4,15 @@ uses sysutils;
 const max = 99;
 
 type
-    vet = array[0..max] of string;
     TNodoCpf = ^TListaCpf;
     TListaCpf = record
         cpf: string;
         prox: TNodoCpf
     end;
+    vetCpf = array[0..max] of TNodoCpf;
 
 var cpf: string;
-    vHash: vet;
+    vHash: vetCpf;
     i, qtd_elem: integer;
     op: byte;
 
@@ -65,6 +65,23 @@ begin
 				end;
     		validaCpf := true;
 		end;
+end;
+
+function hash(cpf: string): integer;
+begin
+    hash := StrToIntDef(cpf[10] + cpf[11], 0);
+end;
+
+procedure inserirCpf(var tabCpf: vetCpf; cpfNovo: string);
+begin
+    hashCpf := hash(cpfNovo);
+
+    new(novo);
+    novo^.cpf := cpfNovo;
+    novo^.prox := tabCpf[hashCpf];
+    tabCpf[hashCpf] := novo;
+
+    escreva('CPF inserido com sucesso!');
 end;
 
 Begin
