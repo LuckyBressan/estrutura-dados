@@ -27,37 +27,33 @@ procedure escreva(m: string);
 
 function validaCpf(var cpfValidar: string): boolean;
 const lengthCpf = 11;
-var pDigito, sDigito, digito, sum, j, resto : integer;
+var digito, sum, k, j, resto, esperado : integer;
+    valido : boolean;
 begin
-	if Length(cpfValidar) <> lengthCpf then
-		begin
-			validaCpf := FALSE;
-		end
-	else
-		begin
-			pDigito := StrToIntDef(cpfValidar[10], 0);
-			sDigito := StrToIntDef(cpfValidar[11], 0);
-			for i := 10 to lengthCpf do
-				begin
-				    digito := StrToIntDef(cpfValidar[i], 0);
-                    sum := 0;
-					for j := 1 to i - 1 do
-						begin
-							sum := sum + (StrToIntDef(cpfValidar[j],0) * (i - (j - 1)));
-						end;
-					resto := sum mod 11;
+	valido := TRUE;
 
-					if ((resto = 0) or (resto = 1)) and (digito <> 0) then
-						begin
-							validaCpf := FALSE;
-						end
-					else if (lengthCpf - resto) <> digito then
-						begin
-							validaCpf := FALSE;
-						end;
-				end;
-    		validaCpf := true;
-		end;
+	if Length(cpfValidar) <> lengthCpf then
+		valido := FALSE
+	else
+		for k := 10 to lengthCpf do
+			begin
+				digito := StrToIntDef(cpfValidar[k], 0);
+				sum := 0;
+				for j := 1 to k - 1 do
+					sum := sum + (StrToIntDef(cpfValidar[j], 0) * (k - (j - 1)));
+
+				resto := sum mod 11;
+
+				if resto < 2 then
+					esperado := 0
+				else
+					esperado := 11 - resto;
+
+				if digito <> esperado then
+					valido := FALSE;
+			end;
+
+	validaCpf := valido;
 end;
 
 function hash(cpf: string): integer;
@@ -72,9 +68,7 @@ var
 begin
 
     if validaCpf(cpfNovo) = FALSE then
-        begin
-            escreva('CPF informado é invalido!');
-        end
+        escreva('CPF informado e invalido!');
     else 
         begin
             hashCpf := hash(cpfNovo);
@@ -98,6 +92,7 @@ procedure listarCpf(tabCpf: vetCpf);
 var listaVazia : boolean;
     aux : TNodoCpf;
 begin
+    escreva('Inicio da listagem!');
     listaVazia := TRUE;
 
     for i := 0 to MAX - 1 do
@@ -119,6 +114,7 @@ begin
     
     if listaVazia = TRUE then
         escreva('Nenhum CPF estava cadastrado!');
+    escreva('Fim da listagem!');
 end;
 
 procedure buscarCpf(tabCpf: vetCpf; cpfBusca: string);
@@ -126,16 +122,22 @@ var
     hashCpf : integer;
     aux: TNodoCpf;
 begin
-    hashCpf := hash(cpfBusca);
-    aux := tabCpf[hashCpf];
 
-    while (aux <> nil) and (aux^.cpf <> cpfBusca) do
-        aux := aux^.prox;
+    if validaCpf(cpfBusca) = FALSE then
+        escreva('CPF informado é invalido!');
+    else
+        begin
+            hashCpf := hash(cpfBusca);
+            aux := tabCpf[hashCpf];
 
-    if aux <> nil then
-        escreva('CPF informado esta na lista!')
-    else 
-        escreva('CPF informado não esta na lista!');
+            while (aux <> nil) and (aux^.cpf <> cpfBusca) do
+                aux := aux^.prox;
+
+            if aux <> nil then
+                escreva('CPF informado esta na lista!')
+            else 
+                escreva('CPF informado nao esta na lista!');
+        end;
 end;
 
 Begin
@@ -151,6 +153,7 @@ Begin
             writeln('1 - Cadastrar CPF');
             writeln('2 - Remover CPF');
             writeln('3 - Listar CPFs');
+            writeln('4 - Buscar CPF');
 
             writeln();
             writeln();
@@ -171,6 +174,11 @@ Begin
                 3: begin
                     writeln('Lista de CPFs:');
                     listarCpf(vHash);
+                end;
+                4: begin
+                    writeln('Buscar CPF:');
+                    readln(cpf);
+                    buscarCpf(vHash, cpf);
                 end;
             end;
         end;
