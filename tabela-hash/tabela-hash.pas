@@ -31,35 +31,28 @@ var pDigito, sDigito, digito, sum, j, resto : integer;
 begin
 	if Length(cpfValidar) <> lengthCpf then
 		begin
-			escreva('CPF invalido');
 			validaCpf := FALSE;
 		end
 	else
 		begin
 			pDigito := StrToIntDef(cpfValidar[10], 0);
 			sDigito := StrToIntDef(cpfValidar[11], 0);
-			sum := 0;
 			for i := 10 to lengthCpf do
 				begin
 				    digito := StrToIntDef(cpfValidar[i], 0);
+                    sum := 0;
 					for j := 1 to i - 1 do
 						begin
-                            writeln(i, ' - ', (j - 1), ' = ', i - (j - 1), ' * ', StrToIntDef(cpfValidar[j],0), ' = ', (StrToIntDef(cpfValidar[j],0) * (i - (j - 1))));
 							sum := sum + (StrToIntDef(cpfValidar[j],0) * (i - (j - 1)));
 						end;
 					resto := sum mod 11;
 
-                    writeln(sum);
-                    writeln('Digito:', digito, 'Resto:', resto);
-
 					if ((resto = 0) or (resto = 1)) and (digito <> 0) then
 						begin
-							writeln('CPF invalido, resto e 0 ou 1 e o digito e ', digito);
 							validaCpf := FALSE;
 						end
 					else if (lengthCpf - resto) <> digito then
 						begin
-							writeln('CPF invalido, resto e ', resto, ' e o digito e ', digito);
 							validaCpf := FALSE;
 						end;
 				end;
@@ -73,15 +66,76 @@ begin
 end;
 
 procedure inserirCpf(var tabCpf: vetCpf; cpfNovo: string);
+var 
+    hashCpf : integer;
+    novo: TNodoCpf;
 begin
-    hashCpf := hash(cpfNovo);
 
-    new(novo);
-    novo^.cpf := cpfNovo;
-    novo^.prox := tabCpf[hashCpf];
-    tabCpf[hashCpf] := novo;
+    if validaCpf(cpfNovo) = FALSE then
+        begin
+            escreva('CPF informado é invalido!');
+        end
+    else 
+        begin
+            hashCpf := hash(cpfNovo);
 
-    escreva('CPF inserido com sucesso!');
+            new(novo);
+
+            if novo = nil then
+                escreva('Sem memória!')
+            else 
+                begin
+                    novo^.cpf := cpfNovo;
+                    novo^.prox := tabCpf[hashCpf];
+                    tabCpf[hashCpf] := novo;
+
+                    escreva('CPF inserido com sucesso!');
+                end;
+        end;
+end;
+
+procedure listarCpf(tabCpf: vetCpf);
+var listaVazia : boolean;
+    aux : TNodoCpf;
+begin
+    listaVazia := TRUE;
+
+    for i := 0 to MAX - 1 do
+        if tabCpf[i] <> nil then
+            begin
+                listaVazia := FALSE;
+                writeln();
+                writeln('Chave: ', i);
+
+                aux := tabCpf[i];
+
+                while aux <> nil do
+                    begin
+                        writeln(aux^.cpf);
+                        aux := aux^.prox;
+                    end;
+
+            end;
+    
+    if listaVazia = TRUE then
+        escreva('Nenhum CPF estava cadastrado!');
+end;
+
+procedure buscarCpf(tabCpf: vetCpf; cpfBusca: string);
+var 
+    hashCpf : integer;
+    aux: TNodoCpf;
+begin
+    hashCpf := hash(cpfBusca);
+    aux := tabCpf[hashCpf];
+
+    while (aux <> nil) and (aux^.cpf <> cpfBusca) do
+        aux := aux^.prox;
+
+    if aux <> nil then
+        escreva('CPF informado esta na lista!')
+    else 
+        escreva('CPF informado não esta na lista!');
 end;
 
 Begin
@@ -89,7 +143,7 @@ Begin
     op := 1;
 
     for i := 1 to max do
-        vHash[i] := '';
+        vHash[i] := nil;
 
     while op <> 0 do
         begin
@@ -108,17 +162,15 @@ Begin
                 1: begin
                     writeln('Informe o CPF:');
                     readln(cpf);
-                    validaCpf(cpf);
-                    escreva('CPF incluido');
+                    inserirCpf(vHash, cpf);
                 end;
                 2: begin
                     writeln('Informe o CPF que deseja remover:');
                     readln(cpf);
-                    // removerCpf(cpf, vHash);
                 end;
                 3: begin
                     writeln('Lista de CPFs:');
-                    // listaCpf();
+                    listarCpf(vHash);
                 end;
             end;
         end;
